@@ -1,0 +1,43 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+typedef struct {
+    char nome[50];
+    int idade;
+    float salario;
+} Funcionario;
+
+int main() {
+    FILE *arquivo;
+    Funcionario f;
+    char nomeBusca[50];
+    
+    printf("Digite o nome do funcionário para buscar: ");
+    fgets(nomeBusca, sizeof(nomeBusca), stdin);
+    nomeBusca[strcspn(nomeBusca, "\n")] = '\0'; // Remover o \n do final
+    
+    arquivo = fopen("funcionarios.bin", "rb");
+    if (arquivo == NULL) {
+        perror("Erro ao abrir o arquivo");
+        return 1;
+    }
+    
+    int encontrado = 0;
+    while (fread(&f, sizeof(Funcionario), 1, arquivo) == 1) {
+        if (strcmp(f.nome, nomeBusca) == 0) {
+            printf("Funcionário encontrado:\n");
+            printf("Nome: %s, Idade: %d, Salário: %.2f\n", f.nome, f.idade, f.salario);
+            encontrado = 1;
+            break;
+        }
+    }
+    
+    if (!encontrado) {
+        printf("Funcionário não encontrado.\n");
+    }
+    
+    fclose(arquivo);
+    
+    return 0;
+}
